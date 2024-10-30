@@ -1,0 +1,31 @@
+on:
+  push:
+
+jobs:
+  codspeed:
+    runs-on: codspeed-macro
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+        include:
+          - { python-version: "3.13t", gil: "1" }
+          - { python-version: "3.13t", gil: "0" }
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - uses: CodSpeedHQ/action@v3
+        env:
+          PYTHON_GIL: ${{ matrix.gil }}
+        with:
+          runner-version: 3.1.0-beta.3
+          run: uv run pytest --codspeed --codspeed-max-time 10 -vs tests.py
+          token: ${{ secrets.CODSPEED_TOKEN }}

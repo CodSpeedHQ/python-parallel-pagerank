@@ -1,0 +1,9 @@
+[project]
+name = "python-parallel-pagerank"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["numpy>=2.1.2"]
+
+[tool.uv]
+dev-dependencies = ["pytest-codspeed>=3.0.0"]
